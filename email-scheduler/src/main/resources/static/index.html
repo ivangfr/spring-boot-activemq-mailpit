@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="dark">
+<head>
+    <title>Schedule Email</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-slate-900 dark:to-indigo-900 min-h-screen py-12 px-4">
+<div class="max-w-md mx-auto bg-white/70 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/50">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 flex items-center justify-center gap-3">
+            @ Schedule Email
+        </h1>
+        <p class="text-slate-600 dark:text-slate-300">Queue via ActiveMQ</p>
+    </div>
+
+    <form id="emailForm" class="space-y-4">
+        <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">To</label>
+            <input type="email" id="to" required
+                   class="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white/50 dark:bg-slate-700/50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                   placeholder="recipient@example.com">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Subject</label>
+            <input type="text" id="subject"
+                   class="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white/50 dark:bg-slate-700/50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                   placeholder="Email subject">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Body</label>
+            <textarea id="body" rows="4"
+                      class="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white/50 dark:bg-slate-700/50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-vertical"
+                      placeholder="Email content"></textarea>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Schedule</label>
+            <div class="flex gap-2 mb-3">
+                <button type="button" id="sendNow" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Send Now
+                </button>
+            </div>
+            <div class="flex items-center mb-3">
+                <div class="flex-1 h-px bg-slate-200 dark:bg-slate-600"></div>
+                <span class="px-3 text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">or</span>
+                <div class="flex-1 h-px bg-slate-200 dark:bg-slate-600"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">Date</label>
+                    <input type="date" id="scheduleDate" class="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white/50 dark:bg-slate-700/50 focus:ring-2 focus:ring-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">Time</label>
+                    <input type="time" id="scheduleTime" class="w-full p-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white/50 dark:bg-slate-700/50 focus:ring-2 focus:ring-indigo-500 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 text-lg">
+            🚀 Schedule & Queue
+        </button>
+    </form>
+
+    <div id="status" class="mt-6"></div>
+</div>
+
+<div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+<script>
+    (function() {
+        // Constants
+        const TOAST_DURATION = 4000;
+        const TOAST_EXIT_DELAY = 300;
+        const BUTTON_RING_DURATION = 1000;
+        const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Cached DOM elements
+        const to = document.getElementById('to').value = '';
+        const subject = document.getElementById('subject').value = '';
+        const body = document.getElementById('body').value = '';
+        const sendNowBtn = document.getElementById('sendNow');
+        const dateInput = document.getElementById('scheduleDate');
+        const timeInput = document.getElementById('scheduleTime');
+        const emailForm = document.getElementById('emailForm');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Set today's date/time with constraints
+        const today = new Date();
+        const todayStr = today.toISOString().slice(0, 10);
+        dateInput.value = todayStr;
+        dateInput.min = todayStr;
+        timeInput.value = today.toTimeString().slice(0, 5);
+
+        function showToast(message, type = 'info') {
+            const id = 'toast-' + Date.now();
+            const bgColor = {
+                success: 'bg-emerald-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            }[type];
+
+            const toast = document.createElement('div');
+            toast.id = id;
+            toast.className = `p-4 rounded-xl shadow-2xl text-white max-w-sm transform translate-x-full transition-all duration-300 ${bgColor}`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'polite');
+            toast.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⏳'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), TOAST_EXIT_DELAY);
+            }, TOAST_DURATION);
+        }
+
+        function validateForm() {
+            const to = document.getElementById('to').value.trim();
+
+            if (!to) {
+                showToast('Please fill the "To" field', 'error');
+                return false;
+            }
+            if (!EMAIL_REGEX.test(to)) {
+                showToast('Please enter a valid email address', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function calculateDelayInMillis() {
+            const scheduledDateTime = new Date(`${dateInput.value}T${timeInput.value}`);
+            const now = new Date();
+            const diffMs = scheduledDateTime - now;
+
+            if (diffMs <= 0) {
+                throw new Error('Please select a future date/time');
+            }
+            return diffMs;
+        }
+
+        async function handleSubmit(delayInMillis = null) {
+            if (!validateForm()) return;
+
+            try {
+                let finalDelay = delayInMillis;
+                if (finalDelay === null) {
+                    finalDelay = calculateDelayInMillis();
+                }
+
+                const formData = {
+                    to: document.getElementById('to').value,
+                    subject: document.getElementById('subject').value,
+                    body: document.getElementById('body').value,
+                    delayInMillis: finalDelay
+                };
+
+                showToast('Scheduling email...', 'info');
+
+                const res = await fetch('/api/scheduled-emails', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Server error: ${res.status}`);
+                }
+
+                const delayText = finalDelay === 0 ? 'Immediate delivery' : `In ${Math.round(finalDelay / 1000)} second(s)`;
+                showToast(`Email queued! ${delayText}`, 'success');
+
+                subject.value = '';
+                body.value = '';
+
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Debounced submit to prevent double-clicks
+        let isSubmitting = false;
+        async function debouncedSubmit(delayInMillis = null) {
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            try {
+                await handleSubmit(delayInMillis);
+            } finally {
+                setTimeout(() => { isSubmitting = false; }, 1000);
+            }
+        }
+
+        sendNowBtn.addEventListener('click', () => {
+            sendNowBtn.classList.add('ring-2', 'ring-emerald-400');
+            debouncedSubmit(0);
+            setTimeout(() => sendNowBtn.classList.remove('ring-2', 'ring-emerald-400'), BUTTON_RING_DURATION);
+        });
+
+        emailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await debouncedSubmit();
+        });
+    })();
+</script>
+</body>
+</html>

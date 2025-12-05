@@ -1,0 +1,17 @@
+services:
+
+  activemq:
+    image: 'apache/activemq-classic:6.2.0'
+    container_name: 'activemq'
+    ports:
+      - '61616:61616'
+      - '8161:8161'
+    volumes:
+      - './activemq/activemq.xml:/opt/apache-activemq/conf/activemq.xml'
+
+  mailpit:
+    image: 'axllent/mailpit:v1.28.0'
+    container_name: 'mailpit'
+    ports:
+      - '1025:1025'
+      - '8025:8025'
