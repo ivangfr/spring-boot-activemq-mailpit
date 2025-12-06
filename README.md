@@ -10,7 +10,7 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 
 - ### email-scheduler
 
-  [Spring Boot](https://spring.io/projects/spring-boot) Java web application that provides REST API and a web interface for sending emails immediately or scheduling emails. It uses [`ActiveMQ`](https://activemq.apache.org/) as the message broker to handle email scheduling and [`MailPit`](https://mailpit.axllent.org/) as a local SMTP server to capture and display sent emails.
+  [Spring Boot](https://spring.io/projects/spring-boot) Java web application that provides REST API and a web UI for sending emails immediately or scheduling emails. It uses [`ActiveMQ`](https://activemq.apache.org/) as the message broker to handle email scheduling and [`MailPit`](https://mailpit.axllent.org/) as a local SMTP server to capture and display sent emails.
 
 ## Project Diagram
 
