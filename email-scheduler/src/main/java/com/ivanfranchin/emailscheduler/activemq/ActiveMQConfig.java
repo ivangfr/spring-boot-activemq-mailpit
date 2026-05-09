@@ -13,15 +13,15 @@ import java.util.List;
 @Configuration
 public class ActiveMQConfig {
 
+    private static final List<String> TRUSTED_PACKAGES = List.of(
+            "java.time",
+            "com.ivanfranchin.emailscheduler.email.event"
+    );
+
     @Bean
     ConnectionFactory connectionFactory(@Value("${spring.activemq.broker-url}") String brokerURL) {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(brokerURL);
         activeMQConnectionFactory.setTrustedPackages(TRUSTED_PACKAGES);
         return activeMQConnectionFactory;
     }
-
-    private static final List<String> TRUSTED_PACKAGES = List.of(
-            "java.time",
-            "com.ivanfranchin.emailscheduler.email.event"
-    );
 }

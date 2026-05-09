@@ -1,6 +1,9 @@
 # spring-boot-activemq-mailpit
 
-This project shows how to implement an email scheduling application. The application allows users to send emails immediately or schedule them for a later time.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ivan.franchin-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/ivan.franchin)
+
+This project shows how to implement an email scheduling application.
 
 ## Proof-of-Concepts & Articles
 
@@ -12,13 +15,16 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 
   [Spring Boot](https://spring.io/projects/spring-boot) Java web application that provides REST API and a web UI for sending emails immediately or scheduling emails. It uses [`ActiveMQ`](https://activemq.apache.org/) as the message broker to handle email scheduling and [`MailPit`](https://mailpit.axllent.org/) as a local SMTP server to capture and display sent emails.
 
+  Endpoint:
+  - `POST /api/scheduled-emails -d {"to": "...", "subject": "...", "body": "...", "delayInMillis": ...}` - Send an email immediately or schedule it for a later time.
+
 ## Project Diagram
 
 ![project-diagram](documentation/project-diagram.png)
 
 ## Prerequisites
 
-- [`Java 21`](https://www.oracle.com/java/technologies/downloads/#java21) or higher;
+- [`Java 25`](https://www.oracle.com/java/technologies/downloads/#java25) or higher;
 - A containerization tool (e.g., [`Docker`](https://www.docker.com), [`Podman`](https://podman.io), etc.)
 
 ## Start Docker Compose services
@@ -64,3 +70,20 @@ To stop and remove Docker Compose containers, network, and volumes, go to a term
 ```bash
 podman compose down -v
 ```
+
+## Running Test Cases
+
+In a terminal and inside the `spring-boot-activemq-mailpit` root folder, run the following command:
+```bash
+./mvnw clean test
+```
+
+## Support
+
+If you find this useful, consider buying me a coffee:
+
+<a href="https://buymeacoffee.com/ivan.franchin"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).

@@ -20,7 +20,9 @@ public class EmailController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void createScheduledEmail(@Valid @RequestBody CreateEmailRequest request) {
-        scheduledEmailProducer.send(ScheduledEmail.from(request));
+    public ScheduledEmail createScheduledEmail(@Valid @RequestBody CreateEmailRequest request) {
+        ScheduledEmail scheduledEmail = ScheduledEmail.from(request);
+        scheduledEmailProducer.send(scheduledEmail);
+        return scheduledEmail;
     }
 }
