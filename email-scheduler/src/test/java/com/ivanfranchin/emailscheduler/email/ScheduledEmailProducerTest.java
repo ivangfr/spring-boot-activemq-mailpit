@@ -1,6 +1,18 @@
 package com.ivanfranchin.emailscheduler.email;
 
-import com.ivanfranchin.emailscheduler.email.event.ScheduledEmail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.Duration;
+import java.time.Instant;
+
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
+
 import org.apache.activemq.ScheduledMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,56 +25,46 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import jakarta.jms.JMSException;
-import jakarta.jms.ObjectMessage;
-import jakarta.jms.Session;
-import java.time.Duration;
-import java.time.Instant;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.ivanfranchin.emailscheduler.email.event.ScheduledEmail;
 
 @ExtendWith(SpringExtension.class)
 @Import(ScheduledEmailProducer.class)
 class ScheduledEmailProducerTest {
 
-    @Autowired
-    private ScheduledEmailProducer producer;
+  @Autowired private ScheduledEmailProducer producer;
 
-    @MockitoBean
-    private JmsTemplate jmsTemplate;
+  @MockitoBean private JmsTemplate jmsTemplate;
 
-    @Test
-    void send_shouldSendMessageWithCorrectQueueAndDelay() throws JMSException {
-        ReflectionTestUtils.setField(producer, "queue", "scheduled-emails.events");
+  @Test
+  void send_shouldSendMessageWithCorrectQueueAndDelay() throws JMSException {
+    ReflectionTestUtils.setField(producer, "queue", "scheduled-emails.events");
 
-        ScheduledEmail scheduledEmail = new ScheduledEmail(
-                "test@example.com",
-                "Subject",
-                "Body",
-                Duration.ofMillis(5000),
-                Instant.now(),
-                Instant.now().plusMillis(5000)
-        );
+    ScheduledEmail scheduledEmail =
+        new ScheduledEmail(
+            "test@example.com",
+            "Subject",
+            "Body",
+            Duration.ofMillis(5000),
+            Instant.now(),
+            Instant.now().plusMillis(5000));
 
-        producer.send(scheduledEmail);
+    producer.send(scheduledEmail);
 
-        ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-        verify(jmsTemplate).send(eq("scheduled-emails.events"), messageCreatorCaptor.capture());
+    ArgumentCaptor<MessageCreator> messageCreatorCaptor =
+        ArgumentCaptor.forClass(MessageCreator.class);
+    verify(jmsTemplate).send(eq("scheduled-emails.events"), messageCreatorCaptor.capture());
 
-        MessageCreator capturedCreator = messageCreatorCaptor.getValue();
-        Session session = mock(Session.class);
-        ObjectMessage objectMessage = mock(ObjectMessage.class);
-        when(session.createObjectMessage(scheduledEmail)).thenReturn(objectMessage);
+    MessageCreator capturedCreator = messageCreatorCaptor.getValue();
+    Session session = mock(Session.class);
+    ObjectMessage objectMessage = mock(ObjectMessage.class);
+    when(session.createObjectMessage(scheduledEmail)).thenReturn(objectMessage);
 
-        capturedCreator.createMessage(session);
+    capturedCreator.createMessage(session);
 
-        ArgumentCaptor<Long> delayCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(objectMessage).setLongProperty(eq(ScheduledMessage.AMQ_SCHEDULED_DELAY), delayCaptor.capture());
+    ArgumentCaptor<Long> delayCaptor = ArgumentCaptor.forClass(Long.class);
+    verify(objectMessage)
+        .setLongProperty(eq(ScheduledMessage.AMQ_SCHEDULED_DELAY), delayCaptor.capture());
 
-        assertThat(delayCaptor.getValue()).isEqualTo(5000L);
-    }
+    assertThat(delayCaptor.getValue()).isEqualTo(5000L);
+  }
 }

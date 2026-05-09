@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class EmailSchedulerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(EmailSchedulerApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(EmailSchedulerApplication.class, args);
+  }
 }

@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record CreateEmailRequest(
-        @NotBlank @Email String to,
-        String subject,
-        String body,
-        @NotNull @PositiveOrZero Long delayInMillis) {
-}
+    @NotBlank @Email String to,
+    String subject,
+    String body,
+    @NotNull @PositiveOrZero Long delayInMillis) {}
