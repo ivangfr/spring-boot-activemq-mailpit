@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.jms.JMSException;
 import jakarta.jms.ObjectMessage;
@@ -25,13 +26,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ivanfranchin.emailscheduler.email.event.ScheduledEmail;
+import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 
 @ExtendWith(SpringExtension.class)
-@Import(ScheduledEmailProducer.class)
-class ScheduledEmailProducerTest {
+@Import(EmailProducer.class)
+class EmailProducerTest {
 
-  @Autowired private ScheduledEmailProducer producer;
+  @Autowired private EmailProducer producer;
 
   @MockitoBean private JmsTemplate jmsTemplate;
 
@@ -39,8 +40,10 @@ class ScheduledEmailProducerTest {
   void send_shouldSendMessageWithCorrectQueueAndDelay() throws JMSException {
     ReflectionTestUtils.setField(producer, "queue", "scheduled-emails.events");
 
-    ScheduledEmail scheduledEmail =
-        new ScheduledEmail(
+    String id = UUID.randomUUID().toString();
+    EmailMessage emailMessage =
+        new EmailMessage(
+            id,
             "test@example.com",
             "Subject",
             "Body",
@@ -48,7 +51,7 @@ class ScheduledEmailProducerTest {
             Instant.now(),
             Instant.now().plusMillis(5000));
 
-    producer.send(scheduledEmail);
+    producer.send(emailMessage);
 
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
         ArgumentCaptor.forClass(MessageCreator.class);
@@ -57,7 +60,7 @@ class ScheduledEmailProducerTest {
     MessageCreator capturedCreator = messageCreatorCaptor.getValue();
     Session session = mock(Session.class);
     ObjectMessage objectMessage = mock(ObjectMessage.class);
-    when(session.createObjectMessage(scheduledEmail)).thenReturn(objectMessage);
+    when(session.createObjectMessage(emailMessage)).thenReturn(objectMessage);
 
     capturedCreator.createMessage(session);
 

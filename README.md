@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ivan.franchin-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/ivan.franchin)
 
-This project shows how to implement an email scheduling application.
+The goal of this project is to demonstrate how to implement an email scheduling application using [`Spring Boot`](https://docs.spring.io/spring-boot/index.html), [`ActiveMQ`](https://activemq.apache.org/), [`PostgreSQL`](https://www.postgresql.org/), and [`Mailpit`](https://mailpit.axllent.org/). The application allows users to send emails immediately or schedule them for a later time. It also provides a web UI to view the history of scheduled emails and cancel pending ones.
 
 ## Proof-of-Concepts & Articles
 
@@ -19,15 +19,21 @@ flowchart TB
     end
 
     subgraph email-scheduler ["email-scheduler:8080\n(Spring Boot)"]
-        RestCtrl["EmailController\nPOST /api/scheduled-emails"]
-        WebUI["Web UI\n(Thymeleaf)"]
-        JMSProducer["ScheduledEmailProducer"]
-        JMSConsumer["ScheduledEmailConsumer"]
-        MailSender["EmailSender"]
+        EmailController["EmailController"]
+        EmailService["EmailService"]
+        EmailRepository["EmailRepository\n(PostgreSQL)"]
+        EmailProducer["EmailProducer"]
+        EmailConsumer["EmailConsumer"]
+        EmailSender["EmailSender"]
+        WebUI["Web UI\n(index.html)"]
     end
 
     subgraph activemq ["ActiveMQ:8161"]
-        Queue[("email-queue")]
+        Queue[("scheduled-emails queue")]
+    end
+
+    subgraph postgres ["PostgreSQL:5432"]
+        DB[("scheduled_emails table")]
     end
 
     subgraph mailpit ["Mailpit:8025"]
@@ -35,25 +41,40 @@ flowchart TB
         MailpitUI["Mailpit UI"]
     end
 
-    HTTP -->|"POST /api/scheduled-emails"| RestCtrl
+    HTTP -->|"POST /api/scheduled-emails"| EmailController
+    HTTP -->|"GET /api/scheduled-emails"| EmailController
+    HTTP -->|"DELETE /api/scheduled-emails/{id}"| EmailController
     Browser -->|"accesses"| WebUI
-    WebUI -->|"submits form"| RestCtrl
+    WebUI -->|"submits form"| EmailController
+    Browser -->|"views history"| EmailController
     Browser -->|"views emails"| MailpitUI
-    RestCtrl -->|"schedules message"| JMSProducer
-    JMSProducer -->|"publishes"| Queue
-    Queue -->|"delivers"| JMSConsumer
-    JMSConsumer -->|"sends email"| MailSender
-    MailSender -->|"SMTP"| SMTP
+
+    EmailController -->|"createEmail()"| EmailService
+    EmailService -->|"save (PENDING/IMMEDIATE)"| EmailRepository
+    EmailRepository -->|"insert"| DB
+    EmailService -->|"send()"| EmailProducer
+    EmailProducer -->|"publish with delay"| Queue
+    Queue -->|"delivers"| EmailConsumer
+    EmailConsumer -->|"findById()"| EmailRepository
+    EmailRepository -->|"query"| DB
+    EmailConsumer -->|"check status"| EmailStatus{"PENDING or IMMEDIATE?"}
+    EmailStatus -->|"yes"| EmailSender
+    EmailSender -->|"SMTP"| SMTP
+    EmailStatus -->|"no (CANCELLED)"| Skip["Skip send"]
 ```
 
 ## Applications
 
 - ### email-scheduler
 
-  [Spring Boot](https://spring.io/projects/spring-boot) Java web application that provides REST API and a web UI for sending emails immediately or scheduling emails. It uses [`ActiveMQ`](https://activemq.apache.org/) as the message broker to handle email scheduling and [`Mailpit`](https://mailpit.axllent.org/) as a local SMTP server to capture and display sent emails.
+  `Spring Boot` Java web application that provides REST API and a web UI for sending emails immediately or scheduling emails. It uses `ActiveMQ` as the message broker to handle email scheduling, `PostgreSQL` for persistence (tracking email status: PENDING, IMMEDIATE, SENT, CANCELLED), and `Mailpit` as a local SMTP server to capture and display sent emails.
 
-  Endpoint:
-  - `POST /api/scheduled-emails -d {"to": "...", "subject": "...", "body": "...", "delayInMillis": ...}` - Send an email immediately or schedule it for a later time.
+  Endpoints:
+  ```text
+    POST /api/scheduled-emails -d {"to": "...", "subject": "...", "body": "...", "delayInMillis": ...}
+     GET /api/scheduled-emails
+  DELETE /api/scheduled-emails/{id}
+  ```
 
 ## Prerequisites
 
@@ -79,6 +100,9 @@ In a terminal and inside the `spring-boot-activemq-mailpit` root folder, run the
 - Open a browser and access `Mailpit` at http://localhost:8025
 - Open another browser and access `email-scheduler` application at http://localhost:8080
 - Fill in the email scheduling form. You can send the email immediately or schedule it for a later time.
+- Emails sent with "Send Now" do not appear in the history panel.
+- You can view all scheduled (pending) emails in the history panel below the form.
+- You can cancel any pending scheduled email by clicking the cancel (X) button.
 - Check the `Mailpit` at the scheduled time to see the received email.
 
 ## Demo
@@ -96,6 +120,13 @@ In a terminal and inside the `spring-boot-activemq-mailpit` root folder, run the
 - **Mailpit**
 
   - Access http://localhost:8025
+
+- **PostgreSQL**
+
+  ```bash
+  docker exec -it postgres psql -U postgres -d emaildb
+  select * from scheduled_emails;
+  ```
 
 ## Shutdown
 

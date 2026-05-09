@@ -8,7 +8,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.ivanfranchin.emailscheduler.email.event.ScheduledEmail;
+import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class ScheduledEmailProducer {
+public class EmailProducer {
 
   private final JmsTemplate jmsTemplate;
 
@@ -24,14 +24,14 @@ public class ScheduledEmailProducer {
   private String queue;
 
   @Async
-  public void send(ScheduledEmail scheduledEmail) {
-    log.info("Sending scheduled email {} to ActiveMQ", scheduledEmail);
+  public void send(EmailMessage emailMessage) {
+    log.info("Sending email {} to ActiveMQ", emailMessage);
     jmsTemplate.send(
         queue,
         messageCreator -> {
-          ObjectMessage message = messageCreator.createObjectMessage(scheduledEmail);
+          ObjectMessage message = messageCreator.createObjectMessage(emailMessage);
           message.setLongProperty(
-              ScheduledMessage.AMQ_SCHEDULED_DELAY, scheduledEmail.delay().toMillis());
+              ScheduledMessage.AMQ_SCHEDULED_DELAY, emailMessage.delay().toMillis());
           return message;
         });
   }

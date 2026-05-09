@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.ivanfranchin.emailscheduler.email.dto.CreateEmailRequest;
 
-public record ScheduledEmail(
+public record EmailMessage(
+    String id,
     String to,
     String subject,
     String body,
@@ -16,9 +18,10 @@ public record ScheduledEmail(
     Instant expectedReturnTime)
     implements Serializable {
 
-  public static ScheduledEmail from(CreateEmailRequest createEmailRequest) {
+  public static EmailMessage from(CreateEmailRequest createEmailRequest, UUID id) {
     Instant now = Instant.now();
-    return new ScheduledEmail(
+    return new EmailMessage(
+        id.toString(),
         createEmailRequest.to(),
         Objects.requireNonNullElse(createEmailRequest.subject(), ""),
         Objects.requireNonNullElse(createEmailRequest.body(), ""),
