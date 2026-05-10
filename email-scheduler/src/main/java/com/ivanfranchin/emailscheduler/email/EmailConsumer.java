@@ -51,6 +51,12 @@ public class EmailConsumer {
     entity.setStatus(EmailStatus.SENT);
     emailRepository.save(entity);
 
-    emailSender.send(emailMessage.to(), emailMessage.subject(), emailMessage.body());
+    try {
+      emailSender.send(emailMessage.to(), emailMessage.subject(), emailMessage.body());
+    } catch (Exception e) {
+      log.error("Failed to send email {}: {}", emailMessage.id(), e.getMessage());
+      entity.setStatus(EmailStatus.FAILED);
+      emailRepository.save(entity);
+    }
   }
 }

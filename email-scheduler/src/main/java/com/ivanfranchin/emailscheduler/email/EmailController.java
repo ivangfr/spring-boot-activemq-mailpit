@@ -43,6 +43,8 @@ public class EmailController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> cancelEmail(@PathVariable UUID id) {
     boolean cancelled = emailService.cancelEmail(id);
-    return cancelled ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    return cancelled
+        ? ResponseEntity.ok().build()
+        : ResponseEntity.status(HttpStatus.CONFLICT).build();
   }
 }

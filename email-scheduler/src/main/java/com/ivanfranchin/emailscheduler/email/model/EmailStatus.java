@@ -4,5 +4,6 @@ public enum EmailStatus {
   PENDING,
   IMMEDIATE,
   SENT,
-  CANCELLED
+  CANCELLED,
+  FAILED
 }
