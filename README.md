@@ -67,7 +67,7 @@ flowchart TB
 
 - ### email-scheduler
 
-  `Spring Boot` Java web application that provides REST API and a web UI for sending emails immediately or scheduling emails. It uses `ActiveMQ` as the message broker to handle email scheduling, `PostgreSQL` for persistence (tracking email status: PENDING, IMMEDIATE, SENT, CANCELLED, FAILED), and `Mailpit` as a local SMTP server to capture and display sent emails.
+  `Spring Boot` Java web application that provides REST API and a web UI for sending emails immediately or scheduling emails. It uses `ActiveMQ` as the message broker to handle email scheduling, `PostgreSQL` for persistence (tracking email status: `PENDING`, `IMMEDIATE`, `SENT`, `CANCELLED`, `FAILED`), and `Mailpit` as a local SMTP server to capture and display sent emails.
 
   Endpoints:
   ```text
@@ -160,7 +160,7 @@ Uses [Spotless Maven Plugin](https://github.com/diffplug/spotless/tree/main/plug
 
 ## How to optimize the GIF in the documentation folder
 
-- [Medium]: [**How I Reduce GIF and Screenshot Sizes for My Technical Articles on macOS**](https://medium.com/itnext/how-i-reduce-gif-and-screenshot-sizes-for-my-technical-articles-on-macos-7fea331afc68)
+\[**Medium**\]: [**How I Reduce GIF and Screenshot Sizes for My Technical Articles on macOS**](https://medium.com/itnext/how-i-reduce-gif-and-screenshot-sizes-for-my-technical-articles-on-macos-7fea331afc68)
 
 ## Support
 
