@@ -9,6 +9,10 @@ The goal of this project is to demonstrate how to implement an email scheduling 
 
 On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-Concepts (PoCs) and articles. You can easily search for the technology you are interested in by using the filter. Who knows, perhaps I have already implemented a PoC or written an article about what you are looking for.
 
+## Additional Readings
+
+- \[**Medium**\] [**Build an Email Scheduler with Spring Boot, ActiveMQ, PostgreSQL, and Mailpit**](https://medium.com/@ivangfr/build-an-email-scheduler-with-spring-boot-activemq-postgresql-and-mailpit-3c1d0562c0dc)
+
 ## Project Overview
 
 ```mermaid
