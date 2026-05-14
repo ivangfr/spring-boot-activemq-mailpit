@@ -22,14 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 
 @ExtendWith(SpringExtension.class)
 @Import(EmailProducer.class)
+@TestPropertySource(properties = "activemq.queue.scheduled-emails=scheduled-emails.events")
 class EmailProducerTest {
 
   @Autowired private EmailProducer producer;
@@ -38,8 +39,6 @@ class EmailProducerTest {
 
   @Test
   void send_shouldSendMessageWithCorrectQueueAndDelay() throws JMSException {
-    ReflectionTestUtils.setField(producer, "queue", "scheduled-emails.events");
-
     String id = UUID.randomUUID().toString();
     EmailMessage emailMessage =
         new EmailMessage(
