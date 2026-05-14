@@ -1,19 +1,16 @@
 package com.ivanfranchin.emailscheduler.email;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
-
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Component;
-
 import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 import com.ivanfranchin.emailscheduler.email.model.EmailEntity;
 import com.ivanfranchin.emailscheduler.email.model.EmailStatus;
-
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Slf4j

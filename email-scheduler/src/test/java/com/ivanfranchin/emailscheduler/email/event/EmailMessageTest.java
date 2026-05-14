@@ -2,13 +2,11 @@ package com.ivanfranchin.emailscheduler.email.event;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ivanfranchin.emailscheduler.email.dto.CreateEmailRequest;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
-
-import com.ivanfranchin.emailscheduler.email.dto.CreateEmailRequest;
 
 class EmailMessageTest {
 

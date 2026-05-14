@@ -1,17 +1,14 @@
 package com.ivanfranchin.emailscheduler.email;
 
+import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 import jakarta.jms.ObjectMessage;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ScheduledMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j

@@ -1,17 +1,14 @@
 package com.ivanfranchin.emailscheduler.email;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
 import com.ivanfranchin.emailscheduler.email.dto.CreateEmailRequest;
 import com.ivanfranchin.emailscheduler.email.dto.EmailResponse;
 import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 import com.ivanfranchin.emailscheduler.email.model.EmailEntity;
 import com.ivanfranchin.emailscheduler.email.model.EmailStatus;
-
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service

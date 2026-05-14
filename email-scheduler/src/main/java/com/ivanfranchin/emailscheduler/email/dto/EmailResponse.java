@@ -1,9 +1,8 @@
 package com.ivanfranchin.emailscheduler.email.dto;
 
+import com.ivanfranchin.emailscheduler.email.model.EmailEntity;
 import java.time.Instant;
 import java.util.UUID;
-
-import com.ivanfranchin.emailscheduler.email.model.EmailEntity;
 
 public record EmailResponse(
     UUID id,

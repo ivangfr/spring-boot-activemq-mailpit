@@ -3,21 +3,19 @@ package com.ivanfranchin.emailscheduler.email;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
+import com.ivanfranchin.emailscheduler.email.model.EmailEntity;
+import com.ivanfranchin.emailscheduler.email.model.EmailStatus;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
-import com.ivanfranchin.emailscheduler.email.model.EmailEntity;
-import com.ivanfranchin.emailscheduler.email.model.EmailStatus;
 
 @ExtendWith(SpringExtension.class)
 @Import(EmailConsumer.class)

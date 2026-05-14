@@ -6,14 +6,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
-
+import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 import jakarta.jms.JMSException;
 import jakarta.jms.ObjectMessage;
 import jakarta.jms.Session;
-
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 import org.apache.activemq.ScheduledMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +24,6 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 
 @ExtendWith(SpringExtension.class)
 @Import(EmailProducer.class)

@@ -1,9 +1,7 @@
 package com.ivanfranchin.emailscheduler.activemq;
 
-import java.util.List;
-
 import jakarta.jms.ConnectionFactory;
-
+import java.util.List;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

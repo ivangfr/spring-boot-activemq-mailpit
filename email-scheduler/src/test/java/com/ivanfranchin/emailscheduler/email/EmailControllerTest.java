@@ -4,17 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.ivanfranchin.emailscheduler.email.dto.CreateEmailRequest;
+import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import com.ivanfranchin.emailscheduler.email.dto.CreateEmailRequest;
-import com.ivanfranchin.emailscheduler.email.event.EmailMessage;
 
 @WebMvcTest(EmailController.class)
 class EmailControllerTest {
