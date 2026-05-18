@@ -10,7 +10,7 @@
     </parent>
     <artifactId>email-scheduler</artifactId>
     <name>email-scheduler</name>
-    <description>Demo project for Spring Boot</description>
+    <description/>
     <url/>
     <licenses>
         <license/>
